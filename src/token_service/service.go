@@ -8,6 +8,7 @@ import (
 
 type Service interface {
 	GetbyID(string) (*access_token.AccessToken, *errors.RestErr)
+	Create(access_token.AccessToken) *errors.RestErr
 }
 
 type service struct {
@@ -26,4 +27,15 @@ func (s *service) GetbyID(id string) (*access_token.AccessToken, *errors.RestErr
 		return nil, err
 	}
 	return accessToken, nil
+}
+
+func (s *service) Create(at access_token.AccessToken) *errors.RestErr {
+	if err := at.Validate(); err != nil {
+		return err
+	}
+	err := s.repository.Create(at)
+	if err != nil {
+		return err
+	}
+	return nil
 }
